@@ -3,6 +3,7 @@ package com.example.firebaseauthlearn
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.example.firebaseauthlearn.databinding.ActivitySignupBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -35,6 +36,8 @@ class SignupActivity : AppCompatActivity() {
                 if(password!=confirmpass){
                     Toast.makeText(this, "Passwords don't match", Toast.LENGTH_SHORT).show()
                 }else{
+                    binding.signupbtn.isEnabled = false
+                    binding.progressBar.visibility= View.VISIBLE
                     firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{
                         if(it.isSuccessful){
                             Toast.makeText(this, "Successfully Signed Up", Toast.LENGTH_SHORT).show()
@@ -43,7 +46,15 @@ class SignupActivity : AppCompatActivity() {
                         }else{
                             Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
                         }
+
+                        binding.signupmail.text.clear()
+                        binding.signuppassword.text.clear()
+                        binding.confirmsignuppass.text.clear()
+                        binding.progressBar.visibility= View.GONE
+                        binding.signupbtn.isEnabled = true
                     }
+
+
                 }
             }else{
                 Toast.makeText(this, "Empty field", Toast.LENGTH_SHORT).show()
