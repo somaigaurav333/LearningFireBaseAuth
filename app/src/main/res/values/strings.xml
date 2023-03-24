@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FireBaseAuthLearn</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in_short">Sign In</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_up">Sign up</string>
+</resources>
