@@ -3,10 +3,12 @@ package com.example.firebaseauthlearn
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings.Global
 import android.view.View
 import android.widget.Toast
 import com.example.firebaseauthlearn.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.*
 
 class LoginActivity : AppCompatActivity() {
 
@@ -31,19 +33,27 @@ class LoginActivity : AppCompatActivity() {
             if(email.isNotEmpty() && pass.isNotEmpty()){
                 binding.progressBarsignin.visibility = View.VISIBLE
                 binding.login.isEnabled = false
-                firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        binding.signinemail.text.clear()
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
-                    }
 
-                    binding.signinpassword.text.clear()
-                    binding.login.isEnabled = true
-                    binding.progressBarsignin.visibility = View.GONE
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            withContext(Dispatchers.Main){
+                                if (it.isSuccessful) {
+                                    binding.signinemail.text.clear()
+                                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                    startActivity(intent)
+                                } else {
+                                    Toast.makeText(this@LoginActivity, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                                }
+                                binding.signinpassword.text.clear()
+                                binding.login.isEnabled = true
+                                binding.progressBarsignin.visibility = View.GONE
+                            }
+                        }
+                    }
                 }
+
             }else{
                 Toast.makeText(this, "Empty fields", Toast.LENGTH_SHORT).show()
             }
